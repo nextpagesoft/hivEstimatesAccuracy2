@@ -20,9 +20,9 @@ GetMigrantEstimates <- function(
   sigma2CD4 <- sigma2[1]
   sigma2VL <- sigma2[2]
 
-  fitAids <- readRDS(GetSystemFile('extdata/fitAids.rds'))
-  betaAids <- -coef(fitAids) / fitAids$scale
-  kappa <- 1 / fitAids$scale
+  fitAIDS <- readRDS(GetSystemFile('extdata/fitAids.rds'))
+  betaAIDS <- -coef(fitAIDS) / fitAIDS$scale
+  kappa <- 1 / fitAIDS$scale
 
   return(NULL)
 }

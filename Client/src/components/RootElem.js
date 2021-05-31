@@ -13,6 +13,7 @@ import TabWelcome from './TabWelcome';
 import TabUpload from './TabUpload/TabUpload';
 import TabSummary from './TabSummary/TabSummary';
 import TabAdjustments from './TabAdjustments/TabAdjustments';
+import TabMigrant from './TabMigrant';
 import TabModelling from './TabModelling/TabModelling';
 import TabReports from './TabReports';
 import TabOutputs from './TabOutputs';
@@ -122,12 +123,15 @@ const RootElem = props => {
           <TabAdjustments {...props} />
         </Page>
         <Page pageId={4} activePageId={appMgr.uiStateMgr.activePageId}>
-          <TabModelling {...props} />
+          <TabMigrant {...props} />
         </Page>
         <Page pageId={5} activePageId={appMgr.uiStateMgr.activePageId}>
-          <TabReports {...props} />
+          <TabModelling {...props} />
         </Page>
         <Page pageId={6} activePageId={appMgr.uiStateMgr.activePageId}>
+          <TabReports {...props} />
+        </Page>
+        <Page pageId={7} activePageId={appMgr.uiStateMgr.activePageId}>
           <TabOutputs {...props} />
         </Page>
       </Box>

@@ -39,6 +39,7 @@ export default class UIStateManager {
       ],
       activeSubPageId: 0
     },
+    { title: 'Migration', completed: false, disabled: false, subPages: [] },
     {
       title: 'Modelling',
       completed: false,
@@ -125,16 +126,18 @@ export default class UIStateManager {
     this.pages[1].completed = this.activePageId > 1;
     this.pages[2].completed = this.activePageId > 2;
     this.pages[3].completed = this.activePageId > 3;
+    this.pages[4].completed = this.activePageId > 4;
 
     this.pages[1].disabled = !this.uploadPageEnabled;
     this.pages[2].disabled = !this.summaryPageEnabled;
     this.pages[3].disabled = !this.adjustmentsPageEnabled;
-    this.pages[4].disabled = !this.modellingPageEnabled;
-    this.pages[5].disabled = !this.reportsPageEnabled;
-    this.pages[6].disabled = !this.outputsPageEnabled;
+    this.pages[4].disabled = false;
+    this.pages[5].disabled = !this.modellingPageEnabled;
+    this.pages[6].disabled = !this.reportsPageEnabled;
+    this.pages[7].disabled = !this.outputsPageEnabled;
 
-    this.setSubPageDisabledStatus(4, 4, !this.bootstrapEnabled);
-    this.setSubPageDisabledStatus(4, 5, !this.modellingOutputsEnabled);
+    this.setSubPageDisabledStatus(5, 4, !this.bootstrapEnabled);
+    this.setSubPageDisabledStatus(5, 5, !this.modellingOutputsEnabled);
   };
 
   get uploadPageEnabled() {
