@@ -1,5 +1,5 @@
 PredictInfAIDS <- function(
-
+  baseAIDS
 ) {
   set.seed(10)
   xAIDS <- cbind(
@@ -12,7 +12,7 @@ PredictInfAIDS <- function(
   baseAIDS[, ProbPre := NA]
   for (i in seq_len(nrow(baseAIDS))) {
     fit1 <- try(integrate(
-      VpostWaids2,
+      VPostWAIDS,
       lower = baseAIDS$Mig[i],
       upper = baseAIDS$U[i],
       x = xAIDS[i, ],
@@ -22,7 +22,7 @@ PredictInfAIDS <- function(
     ), silent = TRUE)
 
     fit2 <- try(integrate(
-      VpostWaids2,
+      VPostWAIDS,
       lower = 0,
       upper = baseAIDS$U[i],
       x = xAIDS[i, ],

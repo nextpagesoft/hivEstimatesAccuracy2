@@ -1,12 +1,11 @@
-PrepareMigrantData <- function(
-  fileName = 'D:/VirtualBox_Shared/BE.csv'
+GetMigrantData <- function(
+  fileName = 'D:/VirtualBox_Shared/BE_adjusted.rds'
 ) {
-  covs <- ReadDataFile(fileName)[, c(
-    'recordid', 'yearofarrivalisodate', 'art', 'artdateisodate', 'cd4latest',
-    'cd4latestdateisodate', 'dateofaidsdiagnosisisodate', 'dateofdiagnosisisodate',
-    'firstcd4dateisodate', 'vllatest', 'vllatestdateisodate', 'acuteinfection'
-  )]
-
+  # covs <- ReadDataFile('D:/VirtualBox_Shared/BE.csv')[, c(
+  #   'recordid', 'yearofarrivalisodate', 'art', 'artdateisodate', 'cd4latest',
+  #   'cd4latestdateisodate', 'dateofaidsdiagnosisisodate', 'dateofdiagnosisisodate',
+  #   'firstcd4dateisodate', 'vllatest', 'vllatestdateisodate', 'acuteinfection'
+  # )]
   adjData <- ReadDataFile('D:/VirtualBox_Shared/BE_adjusted.rds')
 
   # Filter
@@ -178,4 +177,9 @@ PrepareMigrantData <- function(
   baseAIDS[, Id := .I, by = .(Patient)]
   baseAIDS[, DTime := as.numeric(DateOfAIDSDiagnosis - DateOfHIVDiagnosis) / 365.25]
   baseAIDS[DTime < 0, DTime := 0]
+
+  return(list(
+    CD4VL = baseCD4VL,
+    AIDS = baseAIDS
+  ))
 }

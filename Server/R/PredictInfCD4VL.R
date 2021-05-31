@@ -1,3 +1,4 @@
+# data <- PrepareMigrantData()
 PredictInfCD4VL <- function(
   baseCD4VL,
   bFE,
@@ -56,7 +57,7 @@ PredictInfCD4VL <- function(
 
     if (only[[i]][1, Only] == 'Both') {
       fit1 <- try(integrate(
-        VpostW2,
+        VPostW,
         lower = migTime,
         upper = upTime,
         x = x[[i]],
@@ -70,7 +71,7 @@ PredictInfCD4VL <- function(
         varCovRE
       ), silent = TRUE)
       fit2 <- try(integrate(
-        VpostW2,
+        VPostW,
         lower = 0,
         upper = upTime,
         x = x[[i]],
@@ -97,7 +98,7 @@ PredictInfCD4VL <- function(
 
     if (only[[i]][1, Only] == 'CD4 only') {
       fit1 <- try(integrate(
-        VpostWCD42,
+        VPostWCD4,
         lower = migTime,
         upper = upTime,
         x = x[[i]],
@@ -106,12 +107,12 @@ PredictInfCD4VL <- function(
         xAIDS = xAIDS[i, ],
         maxDTime = maxDTime[Id == i, DTime],
         betaAIDS = betaAIDS,
-        bFE,
-        sigma2,
-        varCovRE
+        bFECD4,
+        sigma2CD4,
+        varCovRECD4
       ), silent = TRUE)
       fit2 <- try(integrate(
-        VpostWCD42,
+        VPostWCD4,
         lower = 0,
         upper = upTime,
         x = x[[i]],
@@ -120,9 +121,9 @@ PredictInfCD4VL <- function(
         xAIDS = xAIDS[i, ],
         maxDTime = maxDTime[Id == i, DTime],
         betaAIDS = betaAIDS,
-        bFE,
-        sigma2,
-        varCovRE
+        bFECD4,
+        sigma2CD4,
+        varCovRECD4
       ), silent = TRUE)
 
       if (IsError(fit1) || IsError(fit2)) {
@@ -136,23 +137,46 @@ PredictInfCD4VL <- function(
       }
     }
 
-  #   if (only[[i]][1] == "VL only") {
-  #     uptime <- u[[i]][1]
-  #     migtime <- mig[[i]][1]
+    if (only[[i]][1] == 'VL only') {
+      fit1 <- try(integrate(
+        VPostWVL,
+        lower = migTime,
+        upper = upTime,
+        x = x[[i]],
+        y = y[[i]],
+        z = z[[i]],
+        xAIDS = xAIDS[i, ],
+        maxDTime = maxDTime[Id == i, DTime],
+        betaAIDS = betaAIDS,
+        bFEVL,
+        sigma2VL,
+        varCovREVL
+      ), silent = TRUE)
+      fit2 <- try(integrate(
+        VPostWVL,
+        lower = 0,
+        upper = upTime,
+        x = x[[i]],
+        y = y[[i]],
+        z = z[[i]],
+        xAIDS = xAIDS[i, ],
+        maxDTime = maxDTime[Id == i, DTime],
+        betaAIDS = betaAIDS,
+        bFEVL,
+        sigma2VL,
+        varCovREVL
+      ), silent = TRUE)
 
-  #     fit1 <- try(integrate(VpostWvl, lower = migtime, upper = uptime), silent = T)
-  #     fit2 <- try(integrate(VpostWvl, lower = 0, upper = uptime), silent = T)
+      if (IsError(fit1) || IsError(fit2)) {
+        next
+      } else {
+        res <- fit1$value / fit2$value
+      }
 
-  #     if ("try-error" %in% class(fit1) | "try-error" %in% class(fit2)) {
-  #       next
-  #     } else {
-  #       res <- fit1$value / fit2$value
-  #     }
-
-  #     if (fit2$message == "OK" & fit1$message == "OK") {
-  #       baseCD4VL$ProbPre[ind[[i]]] <- res
-  #     }
-  #   }
+      if (fit1$message == 'OK' && fit2$message == 'OK') {
+        baseCD4VL[ind[[i]], ProbPre := res]
+      }
+    }
   }
 
 }
