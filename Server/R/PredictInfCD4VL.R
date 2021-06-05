@@ -1,10 +1,8 @@
 PredictInfCD4VL <- function(
   baseCD4VL,
-  bFE,
-  sigma2,
-  varCovRE
+  params
 ) {
-  set.seed(10)
+  baseCD4VL <- copy(baseCD4VL)
 
   baseCD4VL[, Ord := seq_len(.N), by = .(Id)]
 
@@ -64,10 +62,10 @@ PredictInfCD4VL <- function(
         z = z[[i]],
         xAIDS = xAIDS[i, ],
         maxDTime = maxDTime[Id == i, DTime],
-        betaAIDS = betaAIDS,
-        bFE,
-        sigma2,
-        varCovRE
+        betaAIDS = params$betaAIDS,
+        bFE = params$bFE,
+        sigma2 = params$sigma2,
+        varCovRE = params$varCovRE
       ), silent = TRUE)
       fit2 <- try(integrate(
         VPostW,
@@ -78,10 +76,10 @@ PredictInfCD4VL <- function(
         z = z[[i]],
         xAIDS = xAIDS[i, ],
         maxDTime = maxDTime[Id == i, DTime],
-        betaAIDS = betaAIDS,
-        bFE,
-        sigma2,
-        varCovRE
+        betaAIDS = params$betaAIDS,
+        bFE = params$bFE,
+        sigma2 = params$sigma2,
+        varCovRE = params$varCovRE
       ), silent = TRUE)
 
       if (IsError(fit1) || IsError(fit2)) {
@@ -105,10 +103,10 @@ PredictInfCD4VL <- function(
         z = z[[i]],
         xAIDS = xAIDS[i, ],
         maxDTime = maxDTime[Id == i, DTime],
-        betaAIDS = betaAIDS,
-        bFECD4,
-        sigma2CD4,
-        varCovRECD4
+        betaAIDS = params$betaAIDS,
+        bFECD4 = params$bFECD4,
+        sigma2CD4 = params$sigma2CD4,
+        varCovRECD4 = params$varCovRECD4
       ), silent = TRUE)
       fit2 <- try(integrate(
         VPostWCD4,
@@ -119,10 +117,10 @@ PredictInfCD4VL <- function(
         z = z[[i]],
         xAIDS = xAIDS[i, ],
         maxDTime = maxDTime[Id == i, DTime],
-        betaAIDS = betaAIDS,
-        bFECD4,
-        sigma2CD4,
-        varCovRECD4
+        betaAIDS = params$betaAIDS,
+        bFECD4 = params$bFECD4,
+        sigma2CD4 = params$sigma2CD4,
+        varCovRECD4 = params$varCovRECD4
       ), silent = TRUE)
 
       if (IsError(fit1) || IsError(fit2)) {
@@ -146,10 +144,10 @@ PredictInfCD4VL <- function(
         z = z[[i]],
         xAIDS = xAIDS[i, ],
         maxDTime = maxDTime[Id == i, DTime],
-        betaAIDS = betaAIDS,
-        bFEVL,
-        sigma2VL,
-        varCovREVL
+        betaAIDS = params$betaAIDS,
+        bFEVL = params$bFEVL,
+        sigma2VL = params$sigma2VL,
+        varCovREVL = params$varCovREVL
       ), silent = TRUE)
       fit2 <- try(integrate(
         VPostWVL,
@@ -160,10 +158,10 @@ PredictInfCD4VL <- function(
         z = z[[i]],
         xAIDS = xAIDS[i, ],
         maxDTime = maxDTime[Id == i, DTime],
-        betaAIDS = betaAIDS,
-        bFEVL,
-        sigma2VL,
-        varCovREVL
+        betaAIDS = params$betaAIDS,
+        bFEVL = params$bFEVL,
+        sigma2VL = params$sigma2VL,
+        varCovREVL = params$varCovREVL
       ), silent = TRUE)
 
       if (IsError(fit1) || IsError(fit2)) {
@@ -178,4 +176,5 @@ PredictInfCD4VL <- function(
     }
   }
 
+  return(baseCD4VL)
 }
