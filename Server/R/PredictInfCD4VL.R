@@ -1,4 +1,3 @@
-# data <- PrepareMigrantData()
 PredictInfCD4VL <- function(
   baseCD4VL,
   bFE,

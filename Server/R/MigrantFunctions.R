@@ -154,6 +154,20 @@ LogPostWVL <- function(
   return(-p)
 }
 
+LogPostWAIDS <- function(
+  w,
+  x,
+  dTime,
+  betaAIDS,
+  kappa
+) {
+  x[3] <- x[3] - w
+  lambda <- exp(x %*% betaAIDS)[1, 1]
+
+  val <- log(kappa) + log(lambda) + (kappa - 1) * log(w + dTime) - lambda * (w + dTime)^kappa
+  return(-val)
+}
+
 # Posterior up to a proportionality constant
 PostW <- function(w, ...) {
   return(exp(-LogPostW(w, ...)))
@@ -167,28 +181,12 @@ PostWVL <- function(w, ...) {
   return(exp(-LogPostWVL(w, ...)))
 }
 
+PostWAIDS <- function(w, ...) {
+  return(suppressWarnings(exp(-LogPostWAIDS(w, ...))))
+}
+
 # Vectorize the functions as the "integrate" function works with vectorized functions
 VPostW <- Vectorize(PostW, vectorize.args = c('w'))
 VPostWCD4 <- Vectorize(PostWCD4, vectorize.args = c('w'))
 VPostWVL <- Vectorize(PostWVL, vectorize.args = c('w'))
-
-# AIDS only cases
-LogPostWAIDS <- function(
-  w,
-  x,
-  dTime,
-  betaAIDS,
-  kappa
-) {
-  x[3] <- x[3] - w
-  lambda <- exp(x %*% betaAIDS)
-
-  val <- log(kappa) + log(lambda) + (kappa - 1) * log(w + dTime) - lambda * (w + dTime)^kappa
-  return(-val)
-}
-
-PostWAIDS <- function(w, ...) {
-  return(exp(-LogPostWAIDS(w, ...)))
-}
-
 VPostWAIDS <- Vectorize(PostWAIDS, vectorize.args = c('w'))

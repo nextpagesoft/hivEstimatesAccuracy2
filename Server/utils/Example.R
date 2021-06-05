@@ -185,7 +185,7 @@ aggrDataSelection <- data.table(
 )
 CombineData(caseData, aggrData, popCombination, aggrDataSelection)
 
-
 # Migration
 data <- GetMigrantData()
 params <- GetMigrantParams()
+migrantAIDS <- PredictInfAIDS(baseAIDS = data$AIDS, params)
