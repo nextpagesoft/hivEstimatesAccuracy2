@@ -12,17 +12,13 @@ PredictInfCD4VL <- function(
     by = c('Id'),
     keep.by = FALSE
   )
-
+  y <- split(baseCD4VL[, .(Id, YVar)], by = c('Id'), keep.by = FALSE)
   z <- split(
     baseCD4VL[, .(Id, Consc, CobsTime, Consr, RobsTime, RLogObsTime2, DTime)],
     by = c('Id'),
     keep.by = FALSE
   )
-
-  y <- split(baseCD4VL[, .(Id, YVar)], by = c('Id'), keep.by = FALSE)
-
   u <- split(baseCD4VL[, .(Id, U)], by = c('Id'), keep.by = FALSE)
-
   ids <- unique(baseCD4VL$Id)
   only <- split(baseCD4VL[, .(Id, Only)], by = c('Id'), keep.by = FALSE)
   mig <- split(baseCD4VL[, .(Id, Mig)], by = c('Id'), keep.by = FALSE)
@@ -42,8 +38,12 @@ PredictInfCD4VL <- function(
     ind[[i]] <- which(baseCD4VL$Id == ids[i])
   }
 
-  baseCD4VL[, ProbPre := NA]
-
+  baseCD4VL[, ProbPre := NA_real_]
+  pb <- progress::progress_bar$new(
+    format = '[:bar] :current/:total (:percent, ETA: :eta)',
+    total = length(ids)
+  )
+  pb$tick(0)
   for (i in seq_along(unique(ids))) {
     upTime <- u[[i]][1, U]
     migTime <- mig[[i]][1, Mig]
@@ -63,6 +63,7 @@ PredictInfCD4VL <- function(
         xAIDS = xAIDS[i, ],
         maxDTime = maxDTime[Id == i, DTime],
         betaAIDS = params$betaAIDS,
+        kappa = params$kappa,
         bFE = params$bFE,
         sigma2 = params$sigma2,
         varCovRE = params$varCovRE
@@ -77,6 +78,7 @@ PredictInfCD4VL <- function(
         xAIDS = xAIDS[i, ],
         maxDTime = maxDTime[Id == i, DTime],
         betaAIDS = params$betaAIDS,
+        kappa = params$kappa,
         bFE = params$bFE,
         sigma2 = params$sigma2,
         varCovRE = params$varCovRE
@@ -104,6 +106,7 @@ PredictInfCD4VL <- function(
         xAIDS = xAIDS[i, ],
         maxDTime = maxDTime[Id == i, DTime],
         betaAIDS = params$betaAIDS,
+        kappa = params$kappa,
         bFECD4 = params$bFECD4,
         sigma2CD4 = params$sigma2CD4,
         varCovRECD4 = params$varCovRECD4
@@ -118,6 +121,7 @@ PredictInfCD4VL <- function(
         xAIDS = xAIDS[i, ],
         maxDTime = maxDTime[Id == i, DTime],
         betaAIDS = params$betaAIDS,
+        kappa = params$kappa,
         bFECD4 = params$bFECD4,
         sigma2CD4 = params$sigma2CD4,
         varCovRECD4 = params$varCovRECD4
@@ -126,11 +130,7 @@ PredictInfCD4VL <- function(
       if (IsError(fit1) || IsError(fit2)) {
         next
       } else {
-        res <- fit1$value / fit2$value
-      }
-
-      if (fit1$message == 'OK' && fit2$message == 'OK') {
-        baseCD4VL[ind[[i]], ProbPre := res]
+        baseCD4VL[ind[[i]], ProbPre := fit1$value / fit2$value]
       }
     }
 
@@ -145,6 +145,7 @@ PredictInfCD4VL <- function(
         xAIDS = xAIDS[i, ],
         maxDTime = maxDTime[Id == i, DTime],
         betaAIDS = params$betaAIDS,
+        kappa = params$kappa,
         bFEVL = params$bFEVL,
         sigma2VL = params$sigma2VL,
         varCovREVL = params$varCovREVL
@@ -159,6 +160,7 @@ PredictInfCD4VL <- function(
         xAIDS = xAIDS[i, ],
         maxDTime = maxDTime[Id == i, DTime],
         betaAIDS = params$betaAIDS,
+        kappa = params$kappa,
         bFEVL = params$bFEVL,
         sigma2VL = params$sigma2VL,
         varCovREVL = params$varCovREVL
@@ -174,6 +176,7 @@ PredictInfCD4VL <- function(
         baseCD4VL[ind[[i]], ProbPre := res]
       }
     }
+    pb$tick(1)
   }
 
   return(baseCD4VL)

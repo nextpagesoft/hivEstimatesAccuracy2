@@ -6,6 +6,7 @@ LogPostW <- function(
   xAIDS,
   maxDTime,
   betaAIDS,
+  kappa,
   bFE,
   sigma2,
   varCovRE
@@ -78,12 +79,13 @@ LogPostWCD4 <- function(
   xAIDS,
   maxDTime,
   betaAIDS,
+  kappa,
   bFECD4,
   sigma2CD4,
   varCovRECD4
 ) {
   xAIDS[3] <- xAIDS[3] - w
-  lambda <- exp(xAIDS %*% betaAIDS)
+  lambda <- exp(xAIDS %*% betaAIDS)[1, 1]
 
   # Formula for design matrix of fixed effects
   fxCD4 <- formula(
@@ -117,6 +119,7 @@ LogPostWVL <- function(
   xAIDS,
   maxDTime,
   betaAIDS,
+  kappa,
   bFECVL,
   sigma2VL,
   varCovREVL
