@@ -188,8 +188,17 @@ CombineData(caseData, aggrData, popCombination, aggrDataSelection)
 # Migration
 data <- GetMigrantData()
 params <- GetMigrantParams()
-migrantAIDS <- PredictInfAIDS(baseAIDS = data$AIDS, params)
-migrantCD4VL <- PredictInfCD4VL(baseCD4VL = data$CD4VL, params)
+migrantAIDS <- PredictInfAIDS(
+  baseAIDS = data$AIDS[, .(Patient, Gender, AgeDiag, U, Mig, DTime)],
+  params
+)
+migrantCD4VL <- PredictInfCD4VL(
+  baseCD4VL = data$CD4VL[, .(
+    Patient, Id, Gender, GroupedRegion, Mode, AgeDiag, DTime, Calendar, Consc, Consr, CobsTime,
+    RobsTime, RLogObsTime2, YVar, U, Mig, KnownPrePost, Only
+  )],
+  params
+)
 
 # Reconciliations
 reconData <- data.table::setDT(haven::read_dta('D:/VirtualBox_Shared/Migrant_test/TESSY_sample.dta'))

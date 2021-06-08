@@ -80,9 +80,9 @@ LogPostWCD4 <- function(
   maxDTime,
   betaAIDS,
   kappa,
-  bFECD4,
-  sigma2CD4,
-  varCovRECD4
+  bFE,
+  sigma2,
+  varCovRE
 ) {
   xAIDS[3] <- xAIDS[3] - w
   lambda <- exp(xAIDS %*% betaAIDS)[1, 1]
@@ -103,8 +103,8 @@ LogPostWCD4 <- function(
   z <- model.matrix(fz, data = cbind(y, z))
 
   # Mean and variance of the normal kernel
-  mu <- c(x %*% bFECD4)
-  var <- z %*% tcrossprod(varCovRECD4, z) + sigma2CD4 * diag(length(x[, 1]))
+  mu <- c(x %*% bFE)
+  var <- z %*% tcrossprod(varCovRE, z) + sigma2 * diag(length(x[, 1]))
 
   p <- mvnfast::dmvn(y$YVar, mu = mu, sigma = var, log = TRUE) - lambda * (w + maxDTime)^kappa
 
@@ -120,9 +120,9 @@ LogPostWVL <- function(
   maxDTime,
   betaAIDS,
   kappa,
-  bFECVL,
-  sigma2VL,
-  varCovREVL
+  bFE,
+  sigma2,
+  varCovRE
 ) {
   # Design matrix of the time-to-AIDS model
   xAIDS[3] <- xAIDS[3] - w
@@ -149,8 +149,8 @@ LogPostWVL <- function(
   z <- model.matrix(fz, data = cbind(y, z))
 
   # Mean and variance of the normal kernel
-  mu <- c(x %*% bFEVL)
-  var <- z %*% tcrossprod(varCovREVL, z) + sigma2VL * diag(length(x[, 1]))
+  mu <- c(x %*% bFE)
+  var <- z %*% tcrossprod(varCovRE, z) + sigma2 * diag(length(x[, 1]))
 
   p <- mvnfast::dmvn(y$YVar, mu = mu, sigma = var, log = TRUE) - lambda * (w + maxDTime)^kappa
 
