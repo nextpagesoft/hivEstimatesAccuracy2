@@ -33,14 +33,10 @@ PredictInfAIDS <- function(
       kappa = params$kappa
     ), silent = TRUE)
 
-    if (IsError(fit1) || IsError(fit2)) {
+    if (IsError(fit1) || IsError(fit2) || fit1$message != 'OK' || fit2$message != 'OK') {
       next
     } else {
-      res <- fit1$value / fit2$value
-    }
-
-    if (fit1$message == 'OK' && fit2$message == 'OK') {
-      baseAIDS[i, ProbPre := res]
+      baseAIDS[i, ProbPre := fit1$value / fit2$value]
     }
   }
 

@@ -190,3 +190,61 @@ data <- GetMigrantData()
 params <- GetMigrantParams()
 migrantAIDS <- PredictInfAIDS(baseAIDS = data$AIDS, params)
 migrantCD4VL <- PredictInfCD4VL(baseCD4VL = data$CD4VL, params)
+
+# Reconciliations
+reconData <- data.table::setDT(haven::read_dta('D:/VirtualBox_Shared/Migrant_test/TESSY_sample.dta'))
+reconAIDS <- data.table::setDT(haven::read_dta('D:/VirtualBox_Shared/Migrant_test/baseAIDS.dta'))
+reconCD4VL <- data.table::setDT(haven::read_dta('D:/VirtualBox_Shared/Migrant_test/baseCD4VL.dta'))
+
+baseAIDS <- reconAIDS[, 1:18]
+isLabelled <- sapply(baseAIDS, is.labelled)
+colNames <- names(isLabelled[isLabelled])
+baseAIDS[, (colNames) := lapply(.SD, as_factor), .SDcols = colNames]
+setnames(
+  baseAIDS,
+  c(
+    'Patient', 'Gender', 'Mode', 'AgeDiag', 'GroupedRegion', 'Calendar', 'Art', 'DateOfArt',
+    'DateOfHIVDiagnosis', 'DateOfAIDSDiagnosis', 'DateOfArrival', 'DateOfBirth', 'AtRiskDate',
+    'U', 'Mig', 'KnownPrePost', 'Id', 'DTime'
+  )
+)
+
+testAIDS <- PredictInfAIDS(baseAIDS, params)
+
+compareAIDS <- merge(
+  reconAIDS[, .(PATIENT, ProbPre)],
+  testAIDS[, .(Patient, ProbPre)],
+  by.x = c('PATIENT'),
+  by.y = c('Patient'),
+  suffix = c('.Recon', '.Test'),
+  all = TRUE
+)
+compareAIDS[, Diff := ProbPre.Recon - ProbPre.Test]
+compareAIDS[abs(Diff) > 1e-7]
+
+baseCD4VL <- reconCD4VL[, 1:27]
+isLabelled <- sapply(baseCD4VL, is.labelled)
+colNames <- names(isLabelled[isLabelled])
+baseCD4VL[, (colNames) := lapply(.SD, as_factor), .SDcols = colNames]
+setnames(
+  baseCD4VL,
+  c(
+    'Patient', 'DateOfExam', 'YVar', 'Indi', 'Gender', 'Mode', 'AgeDiag', 'GroupedRegion',
+    'Calendar', 'Art', 'DateOfArt', 'DateOfHIVDiagnosis', 'DateOfAIDSDiagnosis', 'DateOfArrival',
+    'DateOfBirth', 'AtRiskDate', 'U', 'Mig', 'KnownPrePost', 'DTime', 'Id', 'Consc', 'Consr',
+    'CobsTime', 'RobsTime', 'RLogObsTime2', 'Only'
+  )
+)
+
+testCD4VL <- PredictInfCD4VL(baseCD4VL, params)
+
+compareCD4VL <- merge(
+  reconCD4VL[1:100, .(PATIENT, ProbPre)],
+  testCD4VL[, .(Patient, ProbPre)],
+  by.x = c('PATIENT'),
+  by.y = c('Patient'),
+  suffix = c('.Recon', '.Test'),
+  all = TRUE
+)
+compareCD4VL[, Diff := ProbPre.Recon - ProbPre.Test]
+compareCD4VL[abs(Diff) > 1e-7]

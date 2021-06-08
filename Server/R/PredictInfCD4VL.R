@@ -26,7 +26,6 @@ PredictInfCD4VL <- function(
 
   # One row per subject
   baseCD4VLId <- baseCD4VL[Ord == 1]
-
   xAIDS <- cbind(
     1,
     as.integer(baseCD4VLId$Gender == 'Male'),
@@ -45,8 +44,8 @@ PredictInfCD4VL <- function(
   )
   pb$tick(0)
   for (i in seq_along(unique(ids))) {
-    upTime <- u[[i]][1, U]
     migTime <- mig[[i]][1, Mig]
+    upTime <- u[[i]][1, U]
 
     if (known[[i]][1, KnownPrePost] != 'Unknown') {
       next
@@ -84,14 +83,10 @@ PredictInfCD4VL <- function(
         varCovRE = params$varCovRE
       ), silent = TRUE)
 
-      if (IsError(fit1) || IsError(fit2)) {
+      if (IsError(fit1) || IsError(fit2) || fit1$message != 'OK' || fit2$message != 'OK') {
         next
       } else {
-        res <- fit1$value / fit2$value
-      }
-
-      if (fit1$message == 'OK' && fit2$message == 'OK') {
-        baseCD4VL[ind[[i]], ProbPre := res]
+        baseCD4VL[ind[[i]], ProbPre := fit1$value / fit2$value]
       }
     }
 
@@ -127,14 +122,14 @@ PredictInfCD4VL <- function(
         varCovRECD4 = params$varCovRECD4
       ), silent = TRUE)
 
-      if (IsError(fit1) || IsError(fit2)) {
+      if (IsError(fit1) || IsError(fit2) || fit1$message != 'OK' || fit2$message != 'OK') {
         next
       } else {
         baseCD4VL[ind[[i]], ProbPre := fit1$value / fit2$value]
       }
     }
 
-    if (only[[i]][1] == 'VL only') {
+    if (only[[i]][1, Only] == 'VL only') {
       fit1 <- try(integrate(
         VPostWVL,
         lower = migTime,
@@ -166,14 +161,10 @@ PredictInfCD4VL <- function(
         varCovREVL = params$varCovREVL
       ), silent = TRUE)
 
-      if (IsError(fit1) || IsError(fit2)) {
+      if (IsError(fit1) || IsError(fit2) || fit1$message != 'OK' || fit2$message != 'OK') {
         next
       } else {
-        res <- fit1$value / fit2$value
-      }
-
-      if (fit1$message == 'OK' && fit2$message == 'OK') {
-        baseCD4VL[ind[[i]], ProbPre := res]
+        baseCD4VL[ind[[i]], ProbPre := fit1$value / fit2$value]
       }
     }
     pb$tick(1)
